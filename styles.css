@@ -91,11 +91,70 @@ a:hover { color: var(--up); }
 .masthead__inner {
   display: flex; align-items: center; justify-content: space-between;
   min-height: 56px;
+  gap: var(--s3);
 }
 
-.masthead__name {
-  font-size: 15px; font-weight: 600; letter-spacing: .02em;
+/* ── 页面切换 ───────────────────────────────────────────────────────── */
+
+.nav { display: flex; align-items: center; gap: 22px; }
+
+.nav a {
+  font-size: 14px;
+  color: var(--ink-3);
+  text-decoration: none;
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s;
 }
+.nav a:hover { color: var(--ink); }
+.nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--up); }
+
+/* 页面容器：hidden 时整块不渲染（也保证画布尺寸归零，切回来会重建） */
+.page[hidden] { display: none; }
+
+/* ── 个人资料 ───────────────────────────────────────────────────────── */
+
+.profile {
+  padding-top: clamp(36px, 6vw, 64px);
+  padding-bottom: clamp(26px, 4vw, 42px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.profile__name {
+  margin: 0;
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -.01em;
+}
+
+.profile__role {
+  margin: 8px 0 0;
+  font-size: clamp(.95rem, 1.6vw, 1.05rem);
+  color: var(--ink-2);
+}
+
+.profile__bio {
+  margin: 10px 0 0;
+  max-width: 62ch;
+  font-size: .97rem;
+  color: var(--ink-2);
+}
+
+.profile__links {
+  list-style: none; margin: var(--s3) 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 10px 22px;
+}
+
+.profile__links a {
+  font-size: 14px;
+  color: var(--ink-2);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule-strong);
+  padding-bottom: 1px;
+  transition: color .15s, border-color .15s;
+}
+.profile__links a:hover { color: var(--up); border-color: var(--up); }
 
 .themebtn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -138,6 +197,16 @@ a:hover { color: var(--up); }
   max-width: 60ch;
   color: var(--ink-2);
 }
+
+/* 个人项目页的页头：同样结构，收敛一档 */
+.hero--sub { padding-block: clamp(40px, 7vw, 76px) clamp(32px, 5vw, 56px); }
+.hero__line--sub {
+  font-size: clamp(1.9rem, 5vw, 3.1rem);
+  max-width: 20ch;
+}
+
+/* 规格条放在页头里时的上间距 */
+.spec--hero { margin-top: clamp(28px, 4vw, 46px); }
 
 /* 读数条 —— 全站唯一一个「响」的元素 */
 .readout {
@@ -350,6 +419,9 @@ a:hover { color: var(--up); }
 }
 .proj:first-child { border-top-color: var(--rule-strong); }
 
+/* 个人项目页的正文块：没有卡片外框，直接跟在区块标题下 */
+.proj--bare { border-top: 0; padding-top: 0; }
+
 .proj__head {
   display: flex; align-items: baseline; flex-wrap: wrap;
   gap: 14px;
@@ -521,6 +593,9 @@ a:hover { color: var(--up); }
   font-size: 14px; display: flex; gap: 10px; align-items: center;
   color: var(--ink-2);
 }
+.foot__meta a { text-decoration: none; border-bottom: 1px solid var(--rule-strong); padding-bottom: 1px; }
+.foot__meta a:hover { color: var(--up); border-color: var(--up); }
+.linksep { color: var(--ink-3); }
 
 /* ── 响应式 ─────────────────────────────────────────────────────────── */
 
