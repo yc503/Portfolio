@@ -89,14 +89,22 @@ a:hover { color: var(--up); }
 }
 
 .masthead__inner {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center;
   min-height: 56px;
-  gap: var(--s3);
+  gap: clamp(14px, 3vw, 32px);
 }
+
+.masthead__name {
+  font-size: 15px; font-weight: 600; letter-spacing: .02em;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.masthead__name:hover { color: var(--up); }
 
 /* ── 页面切换 ───────────────────────────────────────────────────────── */
 
-.nav { display: flex; align-items: center; gap: 22px; }
+.nav { display: flex; align-items: center; gap: clamp(14px, 2.5vw, 22px); }
 
 .nav a {
   font-size: 14px;
@@ -156,6 +164,53 @@ a:hover { color: var(--up); }
 }
 .profile__links a:hover { color: var(--up); border-color: var(--up); }
 
+/* 资料页的页头：身份 + 概况 + 联系方式 */
+.hero--profile { padding-block: clamp(44px, 8vw, 88px) clamp(30px, 5vw, 52px); }
+
+.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 7px 20px;
+  margin: var(--s3) 0 0;
+  max-width: 48ch;
+  font-size: 14px;
+}
+.facts dt { color: var(--ink-3); }
+.facts dd { margin: 0; color: var(--ink-2); }
+
+/* 自我介绍 */
+.prose { max-width: 68ch; }
+.prose p { margin: 0 0 var(--s2); color: var(--ink-2); }
+.prose p:last-child { margin-bottom: 0; }
+
+/* 方向：两列，比项目卡片轻一档 */
+.focus {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s4) var(--s5);
+  border-top: 1px solid var(--rule-strong);
+  padding-top: var(--s3);
+}
+.focus__h { margin: 0 0 6px; font-size: 1rem; font-weight: 650; }
+.focus__p { margin: 0; max-width: 46ch; font-size: .96rem; color: var(--ink-2); }
+
+@media (max-width: 700px) {
+  .focus { grid-template-columns: 1fr; gap: var(--s3); }
+}
+
+/* 资料页里的读数条：区块自带间距，这里不要再撑开 */
+.band .readout { margin-top: 0; }
+
+.morelink { margin: var(--s3) 0 0; }
+.morelink a {
+  font-size: 14px;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 2px solid var(--up);
+  padding-bottom: 2px;
+}
+.morelink a:hover { color: var(--up); }
+
 .themebtn {
   display: inline-flex; align-items: center; gap: 8px;
   font: inherit; font-size: 13px; color: var(--ink-2);
@@ -164,6 +219,7 @@ a:hover { color: var(--up); }
   cursor: pointer; transition: border-color .15s, color .15s;
 }
 .themebtn:hover { color: var(--ink); border-color: var(--rule-strong); }
+.themebtn { margin-left: auto; }   /* 把主题按钮推到最右，名字与导航靠左 */
 
 .themebtn__dot {
   width: 10px; height: 10px; border-radius: 50%;
@@ -197,16 +253,6 @@ a:hover { color: var(--up); }
   max-width: 60ch;
   color: var(--ink-2);
 }
-
-/* 个人项目页的页头：同样结构，收敛一档 */
-.hero--sub { padding-block: clamp(40px, 7vw, 76px) clamp(32px, 5vw, 56px); }
-.hero__line--sub {
-  font-size: clamp(1.9rem, 5vw, 3.1rem);
-  max-width: 20ch;
-}
-
-/* 规格条放在页头里时的上间距 */
-.spec--hero { margin-top: clamp(28px, 4vw, 46px); }
 
 /* 读数条 —— 全站唯一一个「响」的元素 */
 .readout {
@@ -418,9 +464,6 @@ a:hover { color: var(--up); }
   scroll-margin-top: 76px;        /* 让开吸顶页眉，跳过来时标题不被盖住 */
 }
 .proj:first-child { border-top-color: var(--rule-strong); }
-
-/* 个人项目页的正文块：没有卡片外框，直接跟在区块标题下 */
-.proj--bare { border-top: 0; padding-top: 0; }
 
 .proj__head {
   display: flex; align-items: baseline; flex-wrap: wrap;

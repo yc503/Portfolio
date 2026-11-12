@@ -14,9 +14,10 @@
 
 <header class="masthead">
   <div class="wrap masthead__inner">
+    <a class="masthead__name" id="mastname" href="#/profile"></a>
     <nav class="nav" id="nav" aria-label="页面切换">
-      <a href="#/work" data-page="work">作品</a>
-      <a href="#/personal" data-page="personal">个人项目</a>
+      <a href="#/profile" data-page="profile">个人资料</a>
+      <a href="#/projects" data-page="projects">个人项目</a>
     </nav>
     <button class="themebtn" id="themebtn" type="button" aria-live="polite">
       <span class="themebtn__dot" aria-hidden="true"></span>
@@ -27,11 +28,45 @@
 
 <main id="main">
 
-  <!-- 个人资料：两个页面共用，内容由 app.js 从 DATA.profile 渲染 -->
-  <section class="profile wrap" id="profile" aria-label="个人资料"></section>
+  <!-- ══════════════ 个人资料（项目以外） ══════════════ -->
+  <div class="page" id="page-profile">
 
-  <!-- ══════════════ 作品 ══════════════ -->
-  <div class="page" id="page-work">
+    <section class="wrap hero hero--profile">
+      <h1 class="profile__name" id="pf-name"></h1>
+      <p class="profile__role" id="pf-role"></p>
+      <p class="profile__bio" id="pf-bio"></p>
+
+      <dl class="facts" id="pf-facts"></dl>
+
+      <ul class="profile__links" id="pf-links"></ul>
+    </section>
+
+    <section class="wrap band" aria-labelledby="about-h">
+      <h2 class="band__h" id="about-h">自我介绍</h2>
+      <div class="prose" id="pf-about"></div>
+    </section>
+
+    <section class="wrap band" aria-labelledby="focus-h">
+      <h2 class="band__h" id="focus-h">方向</h2>
+      <div class="focus" id="pf-focus"></div>
+    </section>
+
+    <section class="wrap band" aria-labelledby="num-h">
+      <h2 class="band__h" id="num-h">几个数字</h2>
+      <p class="band__note">这些数字来自下面「个人项目」页里那些项目的仓库与报告。</p>
+      <div class="readout" id="pf-readout" role="list" aria-label="关键读数"></div>
+      <p class="morelink"><a href="#/projects">看全部项目 ↓</a></p>
+    </section>
+
+    <section class="wrap band" aria-labelledby="skill-h">
+      <h2 class="band__h" id="skill-h">工具链</h2>
+      <ul class="skills" id="skills"></ul>
+    </section>
+
+  </div>
+
+  <!-- ══════════════ 个人项目（全部项目） ══════════════ -->
+  <div class="page" id="page-projects" hidden>
 
     <section class="hero wrap">
       <canvas class="hero__dust" id="herodust" aria-hidden="true"></canvas>
@@ -46,24 +81,7 @@
         并把这条链路的算力底座与检索层一并做完。
       </p>
 
-      <div class="readout" role="list" aria-label="关键读数">
-        <div class="readout__cell" role="listitem">
-          <span class="readout__num">70,247</span>
-          <span class="readout__cap">Agent 模块代码行数</span>
-        </div>
-        <div class="readout__cell" role="listitem">
-          <span class="readout__num">127<em>/128</em></span>
-          <span class="readout__cap">Agent 子模块提交占比</span>
-        </div>
-        <div class="readout__cell readout__cell--up" role="listitem">
-          <span class="readout__num">97.8<em>%</em></span>
-          <span class="readout__cap">非长会话一次通过率</span>
-        </div>
-        <div class="readout__cell" role="listitem">
-          <span class="readout__num">604<i class="readout__arrow">→</i>13</span>
-          <span class="readout__cap">模型网关攻击面收窄</span>
-        </div>
-      </div>
+      <div class="readout" id="pj-readout" role="list" aria-label="关键读数"></div>
     </section>
 
     <section class="wrap band" aria-labelledby="chain-h">
@@ -120,28 +138,9 @@
       <div id="projects" class="projects"></div>
     </section>
 
-    <section class="wrap band" aria-labelledby="skill-h">
-      <h2 class="band__h" id="skill-h">工具链</h2>
-      <ul class="skills" id="skills"></ul>
-    </section>
-
-  </div>
-
-  <!-- ══════════════ 个人项目 ══════════════ -->
-  <div class="page" id="page-personal" hidden>
-
-    <section class="hero wrap hero--sub">
-      <h2 class="hero__line hero__line--sub" id="personal-title"></h2>
-      <p class="hero__sub" id="personal-sub"></p>
-      <p class="hero__lede" id="personal-lede"></p>
-      <div class="spec spec--hero" id="personal-spec"></div>
-    </section>
-
     <section class="wrap band" aria-labelledby="arch2-h">
-      <h2 class="band__h" id="arch2-h">一条消息走完全程</h2>
-      <p class="band__note">
-        从收到消息到发出回复，中间要过四层。点任意一层，看它的架构设计与它撑起来的能力。
-      </p>
+      <h2 class="band__h" id="arch2-h">大肥鱼 · 一条消息走完全程</h2>
+      <p class="band__note" id="arch2-note"></p>
 
       <div class="arch" id="arch2">
         <canvas class="arch__canvas" id="archcanvas2" aria-hidden="true"></canvas>
@@ -149,11 +148,6 @@
       </div>
 
       <div class="arch__panel" id="archpanel2" aria-live="polite"></div>
-    </section>
-
-    <section class="wrap band" aria-labelledby="detail-h">
-      <h2 class="band__h" id="detail-h">细节</h2>
-      <div id="personal-detail" class="projects"></div>
     </section>
 
   </div>

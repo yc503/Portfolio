@@ -1,14 +1,13 @@
 /* ==========================================================================
    渲染 + 页面路由 + 主题切换。内容全在 data.js，这里只负责把它画出来。
-   两个页面（作品 / 个人项目）共用页眉、资料区与页脚，用 hash 切换。
+   两个分页：个人资料（项目以外）与个人项目（全部项目），用 hash 切换。
    ========================================================================== */
 
 (function () {
   'use strict';
 
-  var SITE_TITLE = (typeof DATA !== 'undefined' && DATA.profile)
-    ? DATA.profile.name + ' — 量化交易 Agent 工程'
-    : document.title;
+  var NAME = (typeof DATA !== 'undefined' && DATA.profile) ? DATA.profile.name : '';
+  var SITE_TITLE = NAME ? NAME + ' — 量化交易 Agent 工程' : document.title;
 
   /* ── 小工具：建元素 ─────────────────────────────────────────────── */
   function el(tag, cls, text) {
@@ -18,7 +17,9 @@
     return n;
   }
 
-  /* ── 正文分块：项目卡片与个人项目页共用 ─────────────────────────── */
+  function byId(id) { return document.getElementById(id); }
+
+  /* ── 正文分块：项目卡片共用 ─────────────────────────────────────── */
   function renderBlocks(p) {
     var body = el('div', 'proj__body');
     (p.blocks || []).forEach(function (b) {
@@ -43,6 +44,27 @@
       item.appendChild(el('span', 'spec__k', pair[1]));
       container.appendChild(item);
     });
+  }
+
+  /* 关键读数：资料页当引子、项目页当首屏，两处共用同一份数据 */
+  function renderReadout(container, items) {
+    if (!container) return;
+    (items || []).forEach(function (r) {
+      var cell = el('div', 'readout__cell' + (r.up ? ' readout__cell--up' : ''));
+      cell.setAttribute('role', 'listitem');
+      var num = el('span', 'readout__num');
+      num.innerHTML = r.num;            // 含 <em> / 箭头标记，内容手写无外部输入
+      cell.appendChild(num);
+      cell.appendChild(el('span', 'readout__cap', r.cap));
+      container.appendChild(cell);
+    });
+  }
+
+  function linkEl(l) {
+    var a = el('a', null, l.label);
+    a.href = l.href;
+    if (/^https?:/i.test(l.href)) { a.target = '_blank'; a.rel = 'noopener'; }
+    return a;
   }
 
   /* ── 架构图 ←→ 项目卡片 的索引 ─────────────────────────────────── */
@@ -101,100 +123,98 @@
     return art;
   }
 
-  /* ── 个人资料（两个页面共用） ───────────────────────────────────── */
-  function renderLinks(parent, links) {
-    links.forEach(function (l, i) {
-      if (i) {
-        var sep = el('span', 'linksep', '·');
-        sep.setAttribute('aria-hidden', 'true');
-        parent.appendChild(sep);
-      }
-      var a = el('a', null, l.label);
-      a.href = l.href;
-      if (/^https?:/i.test(l.href)) { a.target = '_blank'; a.rel = 'noopener'; }
-      parent.appendChild(a);
-    });
-  }
-
-  function renderProfile() {
-    var root = document.getElementById('profile');
+  /* ── 个人资料页 ─────────────────────────────────────────────────── */
+  function renderProfilePage() {
     var p = DATA.profile;
-    if (!root || !p) return;
+    if (!p) return;
 
-    var id = el('div', 'profile__id');
-    id.appendChild(el('h1', 'profile__name', p.name));
-    if (p.role) id.appendChild(el('p', 'profile__role', p.role));
-    if (p.bio) id.appendChild(el('p', 'profile__bio', p.bio));
-    root.appendChild(id);
+    var mn = byId('mastname');
+    if (mn) mn.textContent = p.name;
 
-    if (p.links && p.links.length) {
-      var ul = el('ul', 'profile__links');
-      p.links.forEach(function (l) {
-        var li = el('li');
-        var a = el('a', null, l.label);
-        a.href = l.href;
-        if (/^https?:/i.test(l.href)) { a.target = '_blank'; a.rel = 'noopener'; }
-        li.appendChild(a);
-        ul.appendChild(li);
+    if (byId('pf-name')) byId('pf-name').textContent = p.name;
+    if (byId('pf-role')) byId('pf-role').textContent = p.role || '';
+    if (byId('pf-bio')) byId('pf-bio').textContent = p.bio || '';
+
+    // 概况：小表格，和身份放在一起
+    var facts = byId('pf-facts');
+    if (facts) {
+      (p.facts || []).forEach(function (f) {
+        facts.appendChild(el('dt', null, f.k));
+        facts.appendChild(el('dd', null, f.v));
       });
-      root.appendChild(ul);
     }
 
-    // 页脚的联系方式同源，改一处就够
-    var foot = document.getElementById('footlinks');
-    if (foot && p.links && p.links.length) renderLinks(foot, p.links);
+    var links = byId('pf-links');
+    if (links) {
+      (p.links || []).forEach(function (l) {
+        var li = el('li');
+        li.appendChild(linkEl(l));
+        links.appendChild(li);
+      });
+    }
+
+    var about = byId('pf-about');
+    if (about) {
+      (p.about || []).forEach(function (t) { about.appendChild(el('p', null, t)); });
+    }
+
+    var focus = byId('pf-focus');
+    if (focus) {
+      (p.focus || []).forEach(function (f) {
+        var d = el('div', 'focus__item');
+        d.appendChild(el('h3', 'focus__h', f.h));
+        d.appendChild(el('p', 'focus__p', f.p));
+        focus.appendChild(d);
+      });
+    }
+
+    renderReadout(byId('pf-readout'), DATA.readout);
+
+    var skills = byId('skills');
+    if (skills) {
+      DATA.skills.forEach(function (s) { skills.appendChild(el('li', null, s)); });
+    }
+
+    // 页脚的联系方式与资料页同源，改一处就够
+    var foot = byId('footlinks');
+    if (foot && p.links && p.links.length) {
+      p.links.forEach(function (l, i) {
+        if (i) {
+          var sep = el('span', 'linksep', '·');
+          sep.setAttribute('aria-hidden', 'true');
+          foot.appendChild(sep);
+        }
+        foot.appendChild(linkEl(l));
+      });
+    }
   }
 
   /* ── 个人项目页 ─────────────────────────────────────────────────── */
-  function renderPersonal() {
-    var d = DATA.personal;
-    if (!d) return;
+  function renderProjectsPage() {
+    var root = byId('projects');
+    if (root) DATA.projects.forEach(function (p) { root.appendChild(renderProject(p)); });
 
-    var t = document.getElementById('personal-title');
-    if (t) t.textContent = d.title;
-    var s = document.getElementById('personal-sub');
-    if (s) s.textContent = d.sub || '';
-    var l = document.getElementById('personal-lede');
-    if (l) l.textContent = d.lede || '';
+    renderReadout(byId('pj-readout'), DATA.readout);
 
-    var specRoot = document.getElementById('personal-spec');
-    if (specRoot) renderSpec(specRoot, d.spec);
-
-    var det = document.getElementById('personal-detail');
-    if (det) {
-      var art = el('article', 'proj proj--bare');
-      art.appendChild(renderBlocks(d));
-      if (d.result) {
-        var r = el('p', 'proj__result');
-        r.innerHTML = d.result;
-        art.appendChild(r);
-      }
-      det.appendChild(art);
-    }
+    var note = byId('arch2-note');
+    if (note && DATA.personal && DATA.personal.note) note.textContent = DATA.personal.note;
   }
 
   /* ── 挂载 ───────────────────────────────────────────────────────── */
-  renderProfile();
-
-  var projRoot = document.getElementById('projects');
-  DATA.projects.forEach(function (p) { projRoot.appendChild(renderProject(p)); });
-
-  var skillRoot = document.getElementById('skills');
-  DATA.skills.forEach(function (s) { skillRoot.appendChild(el('li', null, s)); });
-
-  renderPersonal();
+  renderProfilePage();
+  renderProjectsPage();
 
   /* ── 页面路由（hash） ───────────────────────────────────────────── */
-  var PAGES = ['work', 'personal'];
+  var PAGES = ['profile', 'projects'];
 
   function pageFromHash() {
     var h = (location.hash || '').replace(/^#\/?/, '');
-    return PAGES.indexOf(h) >= 0 ? h : 'work';
+    return PAGES.indexOf(h) >= 0 ? h : 'profile';
   }
 
   function showPage(name) {
     PAGES.forEach(function (p) {
-      var node = document.getElementById('page-' + p);
+      var node = byId('page-' + p);
       if (node) node.hidden = (p !== name);
     });
 
@@ -203,15 +223,14 @@
       else a.removeAttribute('aria-current');
     });
 
-    document.title = (name === 'personal' ? '个人项目 — ' : '') + SITE_TITLE;
+    document.title = (name === 'projects' ? '个人项目 — ' : '') + SITE_TITLE;
 
     // 让 motion.js 有机会重建刚显示出来的画布（隐藏时尺寸是 0）
     if (window.PORTFOLIO && PORTFOLIO.onPageShown) PORTFOLIO.onPageShown(name);
   }
 
   function route(scrollTop) {
-    var name = pageFromHash();
-    showPage(name);
+    showPage(pageFromHash());
     if (scrollTop !== false) window.scrollTo(0, 0);
   }
 
@@ -250,8 +269,8 @@
   };
 
   /* ── 主题 ───────────────────────────────────────────────────────── */
-  var btn = document.getElementById('themebtn');
-  var label = document.getElementById('themebtn-label');
+  var btn = byId('themebtn');
+  var label = byId('themebtn-label');
   var KEY = 'portfolio-theme';
 
   function applyTheme(t) {
