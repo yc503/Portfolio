@@ -420,8 +420,8 @@ const DATA = {
 
   /* ── 工具链 ─────────────────────────────────────────────────────── */
   skills: [
-    'Python 3.10–3.13', 'FastAPI / Starlette', 'LangGraph', 'LiteLLM 二次开发',
-    'Milvus + bge 向量检索', 'PostgreSQL', 'MySQL', 'Redis', 'InfluxDB',
+    'Python', 'FastAPI / Starlette', 'LangGraph', 'Agent 应用开发',
+    'Milvus + embedding 向量检索', 'PostgreSQL', 'MySQL', 'Redis', 'InfluxDB',
     'SQLite + peewee', 'WebSocket / SSE', 'pywebview + cx_Freeze 桌面打包',
     'Poetry', 'systemd', 'Docker', '离线交付与依赖裁剪', 'LLM Agent 评测体系设计'
   ]
