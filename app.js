@@ -19,10 +19,14 @@
 
   function byId(id) { return document.getElementById(id); }
 
+  /* 「难点」区块目前不上页面。内容仍留在 data.js 里，把这里改成 true 就恢复 */
+  var SHOW_HARD = false;
+
   /* ── 正文分块：项目卡片共用 ─────────────────────────────────────── */
   function renderBlocks(p) {
     var body = el('div', 'proj__body');
     (p.blocks || []).forEach(function (b) {
+      if (!SHOW_HARD && b.kind === 'hard') return;
       var blk = el('div', 'blk' + (b.kind === 'hard' ? ' blk--hard' : ''));
       blk.appendChild(el('h4', 'blk__h', b.h));
       var ul = el('ul');
