@@ -46,11 +46,19 @@
     });
   }
 
+  /* 分类标签 → 分层色（没登记的分类返回空串，保持中性） */
+  function layerClass(tag) {
+    var m = (typeof DATA !== 'undefined' && DATA.layerColor) ? DATA.layerColor[tag] : null;
+    return m ? ' is-' + m : '';
+  }
+
   /* 关键读数：资料页当引子、项目页当首屏，两处共用同一份数据 */
   function renderReadout(container, items) {
     if (!container) return;
     (items || []).forEach(function (r) {
-      var cell = el('div', 'readout__cell' + (r.up ? ' readout__cell--up' : ''));
+      var cell = el('div', 'readout__cell' +
+        (r.up ? ' readout__cell--up' : '') +
+        (r.layer ? ' is-' + r.layer : ''));
       cell.setAttribute('role', 'listitem');
       var num = el('span', 'readout__num');
       num.innerHTML = r.num;            // 含 <em> / 箭头标记，内容手写无外部输入
@@ -86,7 +94,7 @@
 
     var rail = el('div', 'proj__rail');
     rail.appendChild(el('span', 'proj__no', String(idx + 1).padStart(2, '0')));
-    rail.appendChild(el('span', 'proj__tag', p.tag));
+    rail.appendChild(el('span', 'proj__tag' + layerClass(p.tag), p.tag));
     if (p.spec && p.spec.length) {
       var spec = el('div', 'spec');
       renderSpec(spec, p.spec);
@@ -135,7 +143,7 @@
       b.type = 'button';
       b.appendChild(el('span', 'pindex__no', String(i + 1).padStart(2, '0')));
       b.appendChild(el('span', 'pindex__title', p.title));
-      b.appendChild(el('span', 'pindex__tag', p.tag));
+      b.appendChild(el('span', 'pindex__tag' + layerClass(p.tag), p.tag));
       var key = p.spec && p.spec[0];
       if (key) b.appendChild(el('span', 'pindex__metric', key[0]));
       b.addEventListener('click', function () {
@@ -160,7 +168,10 @@
 
     var list = el('div', 'chart__rows');
     d.rows.forEach(function (r) {
-      var pct = r.pass / r.n * 100;
+      // 一般由 通过数 ÷ 用例数 算出；本人指定的行直接用给定比例
+      var derived = (r.pass != null);
+      var pct = derived ? (r.pass / r.n * 100) : r.pct;
+
       var row = el('div', 'crow');
 
       row.appendChild(el('span', 'crow__name', r.name));
@@ -171,10 +182,11 @@
       bar.style.width = pct.toFixed(1) + '%';
       track.appendChild(bar);
 
-      // 悬停层：补上通过 / 未通过的绝对条数（不进 aria 是因为下面已给完整文本）
-      var tip = el('span', 'crow__tip',
-        '通过 ' + r.pass + ' / 未通过 ' + (r.n - r.pass));
-      track.appendChild(tip);
+      // 悬停层：补上通过 / 未通过的绝对条数（只有算得出来的行才有）
+      if (derived) {
+        track.appendChild(el('span', 'crow__tip',
+          '通过 ' + r.pass + ' / 未通过 ' + (r.n - r.pass)));
+      }
       row.appendChild(track);
 
       row.appendChild(el('span', 'crow__pct', pct.toFixed(1) + '%'));
