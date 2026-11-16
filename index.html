@@ -120,6 +120,16 @@
       </ol>
     </section>
 
+    <section class="wrap band" aria-labelledby="rate-h">
+      <h2 class="band__h" id="rate-h">一次通过率：638 条用例，逐族看</h2>
+      <p class="band__note">
+        这是自建评测体系跑出来的结果。条形长度就是通过率，空白就是没通过的部分。
+        单轮与多轮都在 91% 以上；长会话（要求会话内任务全部通过）掉到 8%~30%，
+        这一档我如实留着——它指向的才是真问题。
+      </p>
+      <div class="chart" id="evalchart"></div>
+    </section>
+
     <section class="wrap band" aria-labelledby="arch-h">
       <h2 class="band__h" id="arch-h">架构与能力</h2>
       <p class="band__note">
@@ -140,6 +150,7 @@
         每个项目按「背景 → 我的动作 → 难点 → 结果」四段写。
         数字都来自仓库、提交记录与评测报告，不是估算。
       </p>
+      <ol class="pindex" id="pindex" aria-label="项目索引"></ol>
       <div id="projects" class="projects"></div>
     </section>
 

@@ -487,16 +487,23 @@ a:hover { color: var(--up); }
 
 .proj {
   position: relative;
-  padding-block: clamp(32px, 4.5vw, 52px);
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: var(--s5);
+  padding-block: clamp(34px, 4.5vw, 56px);
   border-top: 1px solid var(--rule);
   scroll-margin-top: 76px;        /* 让开吸顶页眉，跳过来时标题不被盖住 */
 }
 .proj:first-child { border-top-color: var(--rule-strong); }
 
-.proj__head {
-  display: flex; align-items: baseline; flex-wrap: wrap;
-  gap: 14px;
-  margin-bottom: 10px;
+/* 左栏：序号 / 分类 / 规格条竖排，像一份档案的侧标 */
+.proj__rail { display: flex; flex-direction: column; gap: 10px; }
+
+.proj__no {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .1em;
+  color: var(--ink-3);
 }
 
 .proj__tag {
@@ -504,7 +511,118 @@ a:hover { color: var(--up); }
   color: var(--up);
 }
 
-/* 反向链接：跳回架构图 */
+/* 左栏里的规格条改成竖排 */
+.proj__rail .spec { flex-direction: column; margin: 2px 0 0; border-top: 0; }
+.proj__rail .spec__item {
+  border-right: 0; margin-right: 0; padding: 11px 0 0;
+  border-top: 1px solid var(--rule);
+}
+.proj__rail .spec__item:first-child { border-top: 0; padding-top: 0; }
+
+.proj__main { min-width: 0; }
+.proj__main .proj__arch { display: inline-block; margin-top: 12px; }
+
+/* ── 项目索引：一眼看全，点了跳到那张卡 ─────────────────────────────── */
+
+.pindex {
+  list-style: none; margin: 0 0 var(--s4); padding: 0;
+  border-top: 1px solid var(--rule-strong);
+}
+.pindex li { border-bottom: 1px solid var(--rule); }
+
+.pindex__row {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 88px 96px;
+  align-items: baseline;
+  gap: var(--s3);
+  width: 100%;
+  padding: 12px;
+  margin-inline: -12px;           /* 抵消内边距，让文字与区块标题对齐 */
+  font: inherit;
+  text-align: left;
+  background: none; border: 0;
+  cursor: pointer;
+  transition: background .15s;
+}
+.pindex__row:hover { background: var(--paper-2); }
+.pindex__row:hover .pindex__title,
+.pindex__row:hover .pindex__no { color: var(--up); }
+
+.pindex__no {
+  font-family: var(--mono); font-size: 12px;
+  letter-spacing: .08em; color: var(--ink-3);
+  transition: color .15s;
+}
+.pindex__title { font-size: 14.5px; color: var(--ink); transition: color .15s; }
+.pindex__tag { font-size: 12px; color: var(--up); }
+.pindex__metric {
+  font-family: var(--mono); font-size: 12.5px;
+  color: var(--ink-2); text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 评测通过率图（单序列条形：条长即通过率） ───────────────────────── */
+
+.chart { max-width: 720px; }
+
+.chart__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--s3);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule-strong);
+  font-size: 12.5px; color: var(--ink-3);
+}
+
+.crow {
+  display: grid;
+  grid-template-columns: 132px 58px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: var(--s2);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.crow__name { font-size: 14px; color: var(--ink-2); }
+.crow__n {
+  font-family: var(--mono); font-size: 12.5px;
+  color: var(--ink-3); font-variant-numeric: tabular-nums;
+}
+.crow__pct {
+  font-family: var(--mono); font-size: 13px;
+  color: var(--ink); text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.crow__track {
+  position: relative;
+  height: 10px;
+  background: var(--paper-2);     /* 只是轨道，不承载数据；数据由条长与右侧数字承载 */
+  border-radius: 2px;
+}
+.crow__bar {
+  height: 100%;
+  background: var(--ink);
+  border-radius: 0 4px 4px 0;     /* 数据端圆角，基线端方角 */
+  transition: width .55s cubic-bezier(.2,.7,.3,1);
+}
+
+/* 悬停补上通过 / 未通过的绝对条数 */
+.crow__tip {
+  position: absolute;
+  left: 0; bottom: calc(100% + 7px);
+  padding: 4px 9px;
+  font-family: var(--mono); font-size: 11.5px; line-height: 1;
+  white-space: nowrap;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 3px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s;
+}
+.crow:hover .crow__tip { opacity: 1; }
+
+/* ── 反向链接：跳回架构图 ───────────────────────────────────────────── */
 .proj__arch {
   font: inherit; font-size: 12.5px;
   color: var(--ink-3);
@@ -698,6 +816,45 @@ a:hover { color: var(--up); }
   .chain__node::before { display: none; }
   .spec__item { border-right: 0; margin-right: 0; padding-right: 0; }
   .spec { flex-direction: column; }
+}
+
+/* 项目卡：窄屏收成单栏，左栏的规格条转回横排 */
+@media (max-width: 820px) {
+  .proj { grid-template-columns: 1fr; gap: var(--s3); }
+  .proj__rail {
+    flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 12px;
+  }
+  .proj__rail .spec { flex-direction: row; flex-wrap: wrap; width: 100%; margin: 2px 0 0; }
+  .proj__rail .spec__item {
+    border-top: 0; padding: 0;
+    padding-right: var(--s3); margin-right: var(--s3);
+    border-right: 1px solid var(--rule);
+  }
+  .proj__rail .spec__item:last-child {
+    border-right: 0; margin-right: 0; padding-right: 0;
+  }
+}
+
+/* 项目索引：窄屏换成两行——序号占左侧，标题独占一行，分类与数字下移 */
+@media (max-width: 700px) {
+  .pindex__row {
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    row-gap: 4px;
+  }
+  .pindex__no      { grid-row: 1 / span 2; }
+  .pindex__title   { grid-column: 2 / span 2; }
+  .pindex__tag     { grid-column: 2; }
+  .pindex__metric  { grid-column: 3; }
+}
+
+/* 图表：窄屏把条数与比率换到第二行 */
+@media (max-width: 620px) {
+  .chart__head { flex-wrap: wrap; gap: 4px; }
+  .crow {
+    grid-template-columns: minmax(0, 1fr) 62px;
+    row-gap: 6px;
+  }
+  .crow__n { text-align: right; }
 }
 
 /* ── 动效：只在首屏来一次，且尊重系统偏好 ───────────────────────────── */

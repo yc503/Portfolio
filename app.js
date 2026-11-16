@@ -77,15 +77,27 @@
     });
   }
 
-  /* ── 一个项目 ───────────────────────────────────────────────────── */
-  function renderProject(p) {
+  /* ── 一个项目（双栏档案：左栏序号/分类/规格，右栏正文） ─────────── */
+  function renderProject(p, idx) {
     var art = el('article', 'proj');
     art.id = 'p-' + p.id;
     art.tabIndex = -1;              // 可编程聚焦，跳转后键盘能接着用
     cardIndex[p.id] = art;
 
-    var head = el('div', 'proj__head');
-    head.appendChild(el('span', 'proj__tag', p.tag));
+    var rail = el('div', 'proj__rail');
+    rail.appendChild(el('span', 'proj__no', String(idx + 1).padStart(2, '0')));
+    rail.appendChild(el('span', 'proj__tag', p.tag));
+    if (p.spec && p.spec.length) {
+      var spec = el('div', 'spec');
+      renderSpec(spec, p.spec);
+      rail.appendChild(spec);
+    }
+    art.appendChild(rail);
+
+    var main = el('div', 'proj__main');
+    main.appendChild(el('h3', 'proj__title', p.title));
+    if (p.role) main.appendChild(el('p', 'proj__role', p.role));
+    if (p.lede) main.appendChild(el('p', 'proj__lede', p.lede));
 
     // 反向链接：只给在架构图里有对应节点的项目
     if (archNodeOf[p.id]) {
@@ -98,29 +110,77 @@
         // motion.js 比本文件后加载，所以点击时才判断它在不在
         if (window.PORTFOLIO && PORTFOLIO.selectArch) PORTFOLIO.selectArch(node.id);
       });
-      head.appendChild(back);
-    }
-    art.appendChild(head);
-
-    art.appendChild(el('h3', 'proj__title', p.title));
-    if (p.role) art.appendChild(el('p', 'proj__role', p.role));
-    if (p.lede) art.appendChild(el('p', 'proj__lede', p.lede));
-
-    if (p.spec && p.spec.length) {
-      var spec = el('div', 'spec');
-      renderSpec(spec, p.spec);
-      art.appendChild(spec);
+      main.appendChild(back);
     }
 
-    if (p.blocks && p.blocks.length) art.appendChild(renderBlocks(p));
+    if (p.blocks && p.blocks.length) main.appendChild(renderBlocks(p));
 
     if (p.result) {
       var r = el('p', 'proj__result');
       r.innerHTML = p.result;
-      art.appendChild(r);
+      main.appendChild(r);
     }
 
+    art.appendChild(main);
     return art;
+  }
+
+  /* ── 项目索引：一眼看全，点了跳到那张卡 ─────────────────────────── */
+  function renderProjectIndex() {
+    var root = byId('pindex');
+    if (!root) return;
+    DATA.projects.forEach(function (p, i) {
+      var li = el('li');
+      var b = el('button', 'pindex__row');
+      b.type = 'button';
+      b.appendChild(el('span', 'pindex__no', String(i + 1).padStart(2, '0')));
+      b.appendChild(el('span', 'pindex__title', p.title));
+      b.appendChild(el('span', 'pindex__tag', p.tag));
+      var key = p.spec && p.spec[0];
+      if (key) b.appendChild(el('span', 'pindex__metric', key[0]));
+      b.addEventListener('click', function () {
+        if (window.PORTFOLIO) PORTFOLIO.jumpToProject(p.id);
+      });
+      li.appendChild(b);
+      root.appendChild(li);
+    });
+  }
+
+  /* ── 评测分族通过率（单序列条形：条长即通过率） ─────────────────── */
+  function renderEvalChart() {
+    var root = byId('evalchart');
+    var d = DATA.evalChart;
+    if (!root || !d) return;
+
+    var head = el('div', 'chart__head');
+    head.appendChild(el('span', null, '通过率'));
+    head.appendChild(el('span', null,
+      d.rows.length + ' 个分族 · 合计 ' + d.total + ' 条 · 通过 ' + d.passed + ' 条'));
+    root.appendChild(head);
+
+    var list = el('div', 'chart__rows');
+    d.rows.forEach(function (r) {
+      var pct = r.pass / r.n * 100;
+      var row = el('div', 'crow');
+
+      row.appendChild(el('span', 'crow__name', r.name));
+      row.appendChild(el('span', 'crow__n', r.n + ' 条'));
+
+      var track = el('div', 'crow__track');
+      var bar = el('div', 'crow__bar');
+      bar.style.width = pct.toFixed(1) + '%';
+      track.appendChild(bar);
+
+      // 悬停层：补上通过 / 未通过的绝对条数（不进 aria 是因为下面已给完整文本）
+      var tip = el('span', 'crow__tip',
+        '通过 ' + r.pass + ' / 未通过 ' + (r.n - r.pass));
+      track.appendChild(tip);
+      row.appendChild(track);
+
+      row.appendChild(el('span', 'crow__pct', pct.toFixed(1) + '%'));
+      list.appendChild(row);
+    });
+    root.appendChild(list);
   }
 
   /* ── 个人资料页 ─────────────────────────────────────────────────── */
@@ -205,8 +265,10 @@
   /* ── 个人项目页 ─────────────────────────────────────────────────── */
   function renderProjectsPage() {
     var root = byId('projects');
-    if (root) DATA.projects.forEach(function (p) { root.appendChild(renderProject(p)); });
+    if (root) DATA.projects.forEach(function (p, i) { root.appendChild(renderProject(p, i)); });
 
+    renderProjectIndex();
+    renderEvalChart();
     renderReadout(byId('pj-readout'), DATA.readout);
 
     var note = byId('arch2-note');
