@@ -158,6 +158,19 @@
       (p.about || []).forEach(function (t) { about.appendChild(el('p', null, t)); });
     }
 
+    var exp = byId('pf-exp');
+    if (exp) {
+      (p.experience || []).forEach(function (e) {
+        var li = el('li', 'exp__item');
+        li.appendChild(el('span', 'exp__t', e.t));
+        var body = el('div', 'exp__body');
+        body.appendChild(el('span', 'exp__org', e.org));
+        if (e.title) body.appendChild(el('span', 'exp__title', e.title));
+        li.appendChild(body);
+        exp.appendChild(li);
+      });
+    }
+
     var focus = byId('pf-focus');
     if (focus) {
       (p.focus || []).forEach(function (f) {

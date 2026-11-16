@@ -183,6 +183,34 @@ a:hover { color: var(--up); }
 .prose p { margin: 0 0 var(--s2); color: var(--ink-2); }
 .prose p:last-child { margin-bottom: 0; }
 
+/* 工作经历：左边时间、右边单位与职位 */
+.exp {
+  list-style: none; margin: 0; padding: 0;
+  border-top: 1px solid var(--rule-strong);
+  max-width: 78ch;
+}
+.exp__item {
+  display: grid;
+  grid-template-columns: 168px 1fr;
+  gap: var(--s3);
+  align-items: baseline;
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.exp__t {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.exp__body { display: flex; flex-direction: column; gap: 4px; }
+.exp__org { font-size: 1rem; font-weight: 650; }
+.exp__title { font-size: 14px; color: var(--ink-2); }
+
+@media (max-width: 700px) {
+  .exp__item { grid-template-columns: 1fr; gap: 6px; }
+}
+
 /* 方向：两列，比项目卡片轻一档 */
 .focus {
   display: grid;
