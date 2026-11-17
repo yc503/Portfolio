@@ -7,13 +7,16 @@
 /* ── 令牌 ───────────────────────────────────────────────────────────── */
 
 :root {
-  --paper:      #F2F3F0;
-  --paper-2:    #E9EBE6;
-  --ink:        #15181B;
-  --ink-2:      #5B625E;
-  --ink-3:      #8A908C;
-  --rule:       #D3D7D1;
-  --rule-strong:#B4BAB3;
+  /* 底色是冷调，不是无彩灰——整页的色彩性格从这里来 */
+  --paper:      #EDF0F4;
+  --paper-2:    #E2E8EE;   /* 抬起的表面：结果块、代码 */
+  --paper-3:    #D6DEE7;   /* 再深一层：轨道、提示 */
+  --ink:        #10151A;
+  --ink-2:      #4A565F;
+  --ink-3:      #77838B;
+  --rule:       #CFD7DF;
+  --rule-strong:#AAB6C0;
+
   --up:         #B7302A;   /* 中国红：强调 / 涨。不参与分类，含义唯一 */
   --down:       #1F6B4F;   /* 墨绿：次要 / 跌 */
 
@@ -34,13 +37,15 @@
 }
 
 [data-theme="dark"] {
-  --paper:      #121516;
-  --paper-2:    #191D1F;
-  --ink:        #E7EAE5;
-  --ink-2:      #A2A9A4;
-  --ink-3:      #6E7672;
-  --rule:       #272C2E;
-  --rule-strong:#3A4143;
+  --paper:      #0C1015;
+  --paper-2:    #131A21;
+  --paper-3:    #1A232B;
+  --ink:        #E2E8ED;
+  --ink-2:      #93A0AA;
+  --ink-3:      #606C76;
+  --rule:       #1E2730;
+  --rule-strong:#2F3A44;
+
   --up:         #E4665E;
   --down:       #55BE92;
 
@@ -480,8 +485,9 @@ a:hover { color: var(--up); }
 
 .arch__panel {
   margin-top: var(--s4);
-  padding-top: var(--s3);
-  border-top: 1px solid var(--rule-strong);
+  padding: var(--s3) var(--s3) var(--s4);
+  background: var(--paper-2);     /* 全站唯一一块抬起的表面：它托着一张图 */
+  border-radius: 4px;
 }
 
 .arch__sel {
@@ -517,7 +523,26 @@ a:hover { color: var(--up); }
 
 /* ── 首屏浮尘：极淡的漂移微粒，只作氛围，不参与叙事 ─────────────────── */
 
+/* 首屏只有浮尘，色彩交给下面那层整页氛围 */
 .hero { position: relative; isolation: isolate; }
+
+/* 整页氛围：两层极淡的色晕固定在视口上，像环境光。
+   滚到哪都在，整页就有了色彩底子，而不是只有顶部一抹。
+   全站唯一的装饰性渐变，只此一处。 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(48% 36% at 97% -4%,
+      color-mix(in srgb, var(--c-blue) 17%, transparent), transparent 72%),
+    radial-gradient(44% 34% at 1% 103%,
+      color-mix(in srgb, var(--c-amber) 14%, transparent), transparent 72%);
+}
+
+main, .foot { position: relative; z-index: 1; }
 
 .hero__dust {
   position: absolute; inset: 0;
@@ -642,12 +667,12 @@ a:hover { color: var(--up); }
 .crow__track {
   position: relative;
   height: 10px;
-  background: var(--paper-2);     /* 只是轨道，不承载数据；数据由条长与右侧数字承载 */
+  background: var(--paper-3);     /* 只是轨道，不承载数据；数据由条长与右侧数字承载 */
   border-radius: 2px;
 }
 .crow__bar {
   height: 100%;
-  background: var(--ink);
+  background: var(--up);
   border-radius: 0 4px 4px 0;     /* 数据端圆角，基线端方角 */
   transition: width .55s cubic-bezier(.2,.7,.3,1);
 }
