@@ -400,6 +400,7 @@ a:hover { color: var(--up); }
   color: var(--ink-2);
   font-size: .96rem;
 }
+.band__note strong { color: var(--ink); font-weight: 600; }
 
 /* ── 四层链路 ───────────────────────────────────────────────────────── */
 
